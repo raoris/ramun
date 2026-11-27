@@ -89,7 +89,7 @@ class ConfigRenderer(private val settings: SettingsStore) {
         onAction: (String) -> Unit
     ): Button {
         val primary = component.style != "secondary"
-        val background = if (primary) {
+        val backgroundColor = if (primary) {
             color(palette.accent, Color.BLUE)
         } else {
             color(palette.surface, Color.WHITE)
@@ -104,7 +104,7 @@ class ConfigRenderer(private val settings: SettingsStore) {
             text = component.label
             isAllCaps = false
             setTextColor(foreground)
-            background = rounded(background, dp(this, 12))
+            background = rounded(backgroundColor, dp(this, 12))
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
