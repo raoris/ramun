@@ -261,7 +261,7 @@ class PatientViews(private val context: Context, private val store: PatientStore
         setTextColor(inputTextColor)
         background = rounded(inputSurface, inputBorder, 8)
         setPadding(dp(12), dp(12), dp(12), dp(12))
-        singleLine = true
+        setSingleLine(true)
     }
 
     private fun timestamp(): String =
