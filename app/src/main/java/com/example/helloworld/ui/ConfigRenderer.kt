@@ -13,11 +13,11 @@ import com.example.helloworld.config.Palette
 import com.example.helloworld.config.RemoteConfig
 import com.example.helloworld.config.UiComponent
 
-class ConfigRenderer(private val settings: SettingsStore) {
+class ConfigRenderer {
     fun render(container: ViewGroup, config: RemoteConfig, onAction: (String) -> Unit) {
         container.removeAllViews()
-        val palette = if (settings.darkTheme) config.theme.dark else config.theme.light
-        container.setBackgroundColor(color(palette.background, Color.WHITE))
+        val palette = BLACK_PALETTE
+        container.setBackgroundColor(color(palette.background, Color.BLACK))
 
         val scroll = ScrollView(container.context).apply {
             layoutParams = ViewGroup.LayoutParams(
@@ -39,6 +39,7 @@ class ConfigRenderer(private val settings: SettingsStore) {
 
         config.components
             .filter { it.feature == null || config.features[it.feature] == true }
+            .filter { it !is UiComponent.Button || it.action != "toggle_theme" }
             .forEach { component ->
                 content.addView(
                     when (component) {
@@ -143,4 +144,13 @@ class ConfigRenderer(private val settings: SettingsStore) {
     }
 
     private fun dp(view: View, value: Int): Int = (value * view.resources.displayMetrics.density).toInt()
+
+    private companion object {
+        val BLACK_PALETTE = Palette(
+            background = "#000000",
+            surface = "#111111",
+            text = "#FFFFFF",
+            accent = "#A5B4FC"
+        )
+    }
 }

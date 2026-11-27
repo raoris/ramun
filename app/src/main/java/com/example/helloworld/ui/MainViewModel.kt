@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = ConfigRepository(application)
-    val settings = SettingsStore(application)
     val state = MutableLiveData<ConfigResult>()
 
     fun load(forceRefresh: Boolean = false) {
