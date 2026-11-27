@@ -9,8 +9,11 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.helloworld.ui.ConfigRenderer
 import com.example.helloworld.ui.MainViewModel
+import com.example.helloworld.update.AppUpdater
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
@@ -43,8 +46,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleAction(action: String) {
-        if (action == "refresh") {
-            viewModel.load(forceRefresh = true)
+        when (action) {
+            "refresh" -> viewModel.load(forceRefresh = true)
+            "update_app" -> lifecycleScope.launch {
+                AppUpdater(this@MainActivity).downloadAndInstall()
+            }
         }
     }
 }

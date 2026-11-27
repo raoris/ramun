@@ -17,6 +17,7 @@
   },
   "features": {
     "refresh": true,
+    "update": true,
     "footer": true
   },
   "components": [
@@ -47,6 +48,14 @@
       "type": "spacer",
       "id": "space-card",
       "heightDp": 20
+    },
+    {
+      "type": "button",
+      "id": "update",
+      "label": "Update app",
+      "action": "update_app",
+      "style": "secondary",
+      "feature": "update"
     },
     {
       "type": "button",
