@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "minimumAppVersion": 1,
+  "theme": {
+    "light": {
+      "background": "#F6F7FB",
+      "surface": "#FFFFFF",
+      "text": "#1A1A1A",
+      "accent": "#4F46E5"
+    },
+    "dark": {
+      "background": "#111318",
+      "surface": "#1E222B",
+      "text": "#F5F5F5",
+      "accent": "#A5B4FC"
+    }
+  },
+  "features": {
+    "refresh": true,
+    "themeToggle": true,
+    "footer": true
+  },
+  "components": [
+    {
+      "type": "text",
+      "id": "title",
+      "value": "Hello, World!",
+      "style": "title"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "value": "This screen, theme, and settings came from remote config.",
+      "style": "body"
+    },
+    {
+      "type": "spacer",
+      "id": "space-title",
+      "heightDp": 24
+    },
+    {
+      "type": "card",
+      "id": "info",
+      "title": "Flexible by design",
+      "body": "Edit config/app_config.json to change the app without a new APK."
+    },
+    {
+      "type": "spacer",
+      "id": "space-card",
+      "heightDp": 20
+    },
+    {
+      "type": "button",
+      "id": "theme-toggle",
+      "label": "Toggle theme",
+      "action": "toggle_theme",
+      "style": "secondary",
+      "feature": "themeToggle"
+    },
+    {
+      "type": "button",
+      "id": "refresh",
+      "label": "Refresh config",
+      "action": "refresh",
+      "style": "primary",
+      "feature": "refresh"
+    },
+    {
+      "type": "spacer",
+      "id": "space-footer",
+      "heightDp": 28
+    },
+    {
+      "type": "text",
+      "id": "footer",
+      "value": "Signed remote config · no reinstall needed",
+      "style": "caption",
+      "feature": "footer"
+    }
+  ]
+}
