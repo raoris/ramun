@@ -1,0 +1,10 @@
+token
+local.properties
+.gradle/
+build/
+.idea/
+*.iml
+.DS_Store
+.externalNativeBuild/
+.cxx/
+captures/
