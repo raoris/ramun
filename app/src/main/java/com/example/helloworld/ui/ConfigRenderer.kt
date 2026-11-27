@@ -88,10 +88,8 @@ class ConfigRenderer {
         screenId: String,
         callbacks: Callbacks
     ) {
-        container.removeAllViews()
         val context = container.context
         val palette = config.activePalette
-        container.setBackgroundColor(color(palette.background, Color.WHITE))
         val screen = config.screens.firstOrNull { it.id == screenId }
             ?: ScreenConfig(
                 id = screenId,
@@ -99,20 +97,6 @@ class ConfigRenderer {
                 message = "This feature will be available soon. Please check back for updates."
             )
 
-        val root = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = matchParent()
-        }
-        root.addView(screenTopBar(context, screen, palette, callbacks))
-
-        val scroll = ScrollView(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                0,
-                1f
-            )
-            setFillViewport(true)
-        }
         val content = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
@@ -155,6 +139,41 @@ class ConfigRenderer {
             }
         )
         screen.actions.forEach { content.addView(screenAction(context, it, palette, callbacks)) }
+        renderScreenWithContent(container, config, screenId, screen.title, content, callbacks)
+    }
+
+    fun renderScreenWithContent(
+        container: ViewGroup,
+        config: RemoteConfig,
+        screenId: String,
+        title: String,
+        content: View,
+        callbacks: Callbacks
+    ) {
+        container.removeAllViews()
+        val context = container.context
+        val palette = config.activePalette
+        container.setBackgroundColor(color(palette.background, Color.WHITE))
+        val root = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = matchParent()
+        }
+        root.addView(
+            screenTopBar(
+                context,
+                ScreenConfig(id = screenId, title = title, message = ""),
+                palette,
+                callbacks
+            )
+        )
+        val scroll = ScrollView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+            setFillViewport(true)
+        }
         scroll.addView(content)
         root.addView(scroll)
         config.bottomNavigation?.let {

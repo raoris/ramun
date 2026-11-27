@@ -10,6 +10,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.helloworld.config.RemoteConfig
+import com.example.helloworld.patient.PatientStore
+import com.example.helloworld.patient.PatientViews
 import com.example.helloworld.ui.ConfigRenderer
 import com.example.helloworld.ui.MainViewModel
 import com.example.helloworld.update.AppUpdater
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity(), ConfigRenderer.Callbacks {
     private lateinit var viewModel: MainViewModel
     private lateinit var renderer: ConfigRenderer
     private lateinit var root: FrameLayout
+    private val patientViews by lazy { PatientViews(this, PatientStore(this)) }
     private var config: RemoteConfig? = null
     private var currentScreen: String = HOME_SCREEN
 
@@ -62,6 +65,16 @@ class MainActivity : AppCompatActivity(), ConfigRenderer.Callbacks {
         val active = config ?: return
         if (currentScreen == HOME_SCREEN) {
             renderer.renderHome(root, active, HOME_SCREEN, this)
+        } else if (currentScreen == "patient_registration") {
+            val content = patientViews.registration(active.activePalette) {
+                showScreen("patients")
+            }
+            renderer.renderScreenWithContent(root, active, currentScreen, "Patient Registration", content, this)
+        } else if (currentScreen == "patients") {
+            val content = patientViews.list(active.activePalette) {
+                showScreen("patient_registration")
+            }
+            renderer.renderScreenWithContent(root, active, currentScreen, "Patients", content, this)
         } else {
             renderer.renderScreen(root, active, currentScreen, this)
         }
