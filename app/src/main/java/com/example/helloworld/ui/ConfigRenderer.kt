@@ -314,7 +314,7 @@ class ConfigRenderer {
         val bannerBackground = color(banner.backgroundColor, Color.parseColor("#E4F4F1"))
         val border = color(palette.border, Color.parseColor("#DCE5E5"))
         val primary = color(palette.primary, Color.parseColor("#078F91"))
-        val text = color(palette.text, Color.parseColor("#263238"))
+        val textColor = color(palette.text, Color.parseColor("#263238"))
         val muted = color(palette.muted, Color.parseColor("#607D8B"))
         return LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -355,7 +355,7 @@ class ConfigRenderer {
                     text = banner.headline
                     textSize = 15f
                     setTypeface(typeface, Typeface.BOLD)
-                    setTextColor(text)
+                    setTextColor(textColor)
                     layoutParams = LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
@@ -396,7 +396,7 @@ class ConfigRenderer {
         val surface = color(palette.surface, Color.WHITE)
         val border = color(palette.border, Color.parseColor("#DCE5E5"))
         val primary = color(palette.primary, Color.parseColor("#078F91"))
-        val text = color(palette.text, Color.parseColor("#263238"))
+        val textColor = color(palette.text, Color.parseColor("#263238"))
         val spacing = dp(context, grid.spacingDp)
         val columns = if (grid.columns > 0) grid.columns else 3
         val root = LinearLayout(context).apply {
@@ -449,7 +449,7 @@ class ConfigRenderer {
                     TextView(context).apply {
                         text = item.label
                         textSize = 11f
-                        setTextColor(text)
+                        setTextColor(textColor)
                         gravity = Gravity.CENTER
                         layoutParams = LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
