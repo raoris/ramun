@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="alsefa_primary">#078F91</color>
+    <color name="alsefa_secondary">#1769A5</color>
+    <color name="alsefa_accent">#62B58A</color>
+    <color name="alsefa_background">#E8F3F2</color>
+    <color name="alsefa_surface">#FFFFFF</color>
+    <color name="alsefa_text">#263238</color>
+    <color name="alsefa_border">#DCE5E5</color>
+</resources>

@@ -6,67 +6,103 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.helloworld.config.RemoteConfig
 import com.example.helloworld.ui.ConfigRenderer
-import com.example.helloworld.ui.DraggableMenuGrid
 import com.example.helloworld.ui.MainViewModel
 import com.example.helloworld.update.AppUpdater
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ConfigRenderer.Callbacks {
     private lateinit var viewModel: MainViewModel
     private lateinit var renderer: ConfigRenderer
     private lateinit var root: FrameLayout
+    private var config: RemoteConfig? = null
+    private var currentScreen: String = HOME_SCREEN
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.statusBarColor = Color.BLACK
-        window.navigationBarColor = Color.BLACK
-        WindowCompat.getInsetsController(window, window.decorView)?.apply {
-            hide(WindowInsetsCompat.Type.systemBars())
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         renderer = ConfigRenderer()
-        val content = FrameLayout(this).apply {
+        root = FrameLayout(this).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         }
-        root = FrameLayout(this).apply {
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        }
-        val overlay = FrameLayout(this).apply {
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        }
-        content.addView(root)
-        content.addView(overlay)
-        setContentView(content)
-        overlay.addView(DraggableMenuGrid(this))
+        setContentView(root)
+        applySystemBars(Color.parseColor("#078F91"))
 
         viewModel.state.observe(this) { result ->
-            renderer.render(root, result.config, ::handleAction)
+            config = result.config
+            applySystemBars(parseColor(result.config.activePalette.primary, Color.parseColor("#078F91")))
+            renderCurrent()
         }
         viewModel.load(forceRefresh = true)
     }
 
-    private fun handleAction(action: String) {
+    private fun applySystemBars(primary: Int) {
+        window.statusBarColor = primary
+        window.navigationBarColor = Color.WHITE
+        WindowCompat.getInsetsController(window, window.decorView)?.apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = true
+        }
+    }
+
+    private fun parseColor(value: String, fallback: Int): Int = try {
+        Color.parseColor(value)
+    } catch (e: IllegalArgumentException) {
+        fallback
+    }
+
+    private fun renderCurrent() {
+        val active = config ?: return
+        if (currentScreen == HOME_SCREEN) {
+            renderer.renderHome(root, active, HOME_SCREEN, this)
+        } else {
+            renderer.renderScreen(root, active, currentScreen, this)
+        }
+    }
+
+    override fun onAction(action: String) {
         when (action) {
             "refresh" -> viewModel.load(forceRefresh = true)
             "update_app" -> lifecycleScope.launch {
                 AppUpdater(this@MainActivity).downloadAndInstall()
             }
+            "notifications" -> showScreen("notifications")
+            else -> showScreen(action)
         }
+    }
+
+    override fun onNavigate(screenId: String) {
+        if (screenId == HOME_SCREEN) {
+            currentScreen = HOME_SCREEN
+            renderCurrent()
+        } else {
+            showScreen(screenId)
+        }
+    }
+
+    private fun showScreen(screenId: String) {
+        currentScreen = screenId
+        renderCurrent()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (currentScreen != HOME_SCREEN) {
+            onNavigate(HOME_SCREEN)
+        } else {
+            @Suppress("DEPRECATION")
+            super.onBackPressed()
+        }
+    }
+
+    private companion object {
+        const val HOME_SCREEN = "home"
     }
 }

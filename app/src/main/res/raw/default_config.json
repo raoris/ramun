@@ -1,18 +1,31 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "minimumAppVersion": 1,
   "theme": {
+    "mode": "light",
     "light": {
-      "background": "#F6F7FB",
+      "background": "#E8F3F2",
       "surface": "#FFFFFF",
-      "text": "#1A1A1A",
-      "accent": "#4F46E5"
+      "text": "#263238",
+      "accent": "#62B58A",
+      "primary": "#078F91",
+      "secondary": "#1769A5",
+      "accentAlt": "#62B58A",
+      "border": "#DCE5E5",
+      "muted": "#78909C",
+      "onPrimary": "#FFFFFF"
     },
     "dark": {
-      "background": "#000000",
-      "surface": "#111111",
-      "text": "#FFFFFF",
-      "accent": "#A5B4FC"
+      "background": "#122326",
+      "surface": "#1C3033",
+      "text": "#E8F3F2",
+      "accent": "#62B58A",
+      "primary": "#26A6A8",
+      "secondary": "#5B9BD5",
+      "accentAlt": "#62B58A",
+      "border": "#335054",
+      "muted": "#90A4AE",
+      "onPrimary": "#FFFFFF"
     }
   },
   "features": {
@@ -20,35 +33,156 @@
     "update": true,
     "footer": true
   },
+  "branding": {
+    "appName": "Alsefa Physiotherapy Center",
+    "brand": "ALSEFA",
+    "subtitle": "Physiotherapy & Rehabilitation Center"
+  },
+  "header": {
+    "id": "header",
+    "brand": "ALSEFA",
+    "title": "Alsefa Physiotherapy Center",
+    "subtitle": "Physiotherapy & Rehabilitation Center",
+    "logo": "ic_alsefa_logo",
+    "showNotification": true,
+    "notificationAction": "notifications",
+    "heightDp": 48
+  },
+  "banner": {
+    "id": "banner",
+    "title": "ALSEFA PHYSIOTHERAPY CENTER",
+    "headline": "Your Journey to a Pain-Free Life",
+    "body": "Professional Physiotherapy, Rehabilitation & Personalized Patient Care.",
+    "image": "ic_banner_physio",
+    "action": "book_appointment",
+    "heightDp": 140,
+    "cornerRadiusDp": 8,
+    "backgroundColor": "#E4F4F1"
+  },
+  "grid": {
+    "id": "dashboard",
+    "columns": 3,
+    "spacingDp": 8,
+    "cornerRadiusDp": 8,
+    "items": [
+      { "id": "book_appointment", "label": "Book Appointment", "icon": "ic_calendar", "action": "book_appointment", "visible": true },
+      { "id": "our_services", "label": "Our Services", "icon": "ic_services", "action": "our_services", "visible": true },
+      { "id": "our_therapists", "label": "Our Therapists", "icon": "ic_therapists", "action": "our_therapists", "visible": true },
+      { "id": "patient_registration", "label": "Patient Registration", "icon": "ic_registration", "action": "patient_registration", "visible": true },
+      { "id": "treatment_plans", "label": "Treatment Plans", "icon": "ic_treatment", "action": "treatment_plans", "visible": true },
+      { "id": "exercise_library", "label": "Exercise Library", "icon": "ic_exercise", "action": "exercise_library", "visible": true },
+      { "id": "patient_progress", "label": "Patient Progress", "icon": "ic_progress", "action": "patient_progress", "visible": true },
+      { "id": "contact_us", "label": "Contact Us", "icon": "ic_contact", "action": "contact_us", "visible": true },
+      { "id": "about_alsefa", "label": "About Alsefa", "icon": "ic_about", "action": "about_alsefa", "visible": true }
+    ]
+  },
+  "bottomNavigation": {
+    "id": "bottom_nav",
+    "heightDp": 56,
+    "items": [
+      { "id": "home", "label": "Home", "icon": "ic_home", "action": "home", "visible": true },
+      { "id": "appointments", "label": "Appointments", "icon": "ic_appointments", "action": "appointments", "visible": true },
+      { "id": "patients", "label": "Patients", "icon": "ic_patients", "action": "patients", "visible": true },
+      { "id": "profile", "label": "Profile", "icon": "ic_profile", "action": "profile", "visible": true }
+    ]
+  },
+  "screens": [
+    {
+      "id": "book_appointment",
+      "title": "Book Appointment",
+      "message": "Choose a convenient time and our care team will confirm your physiotherapy session.",
+      "icon": "ic_calendar",
+      "actions": [{ "label": "Contact Us", "action": "contact_us", "style": "primary" }]
+    },
+    {
+      "id": "our_services",
+      "title": "Our Services",
+      "message": "Explore physiotherapy, rehabilitation and personalized care programs.",
+      "icon": "ic_services",
+      "actions": []
+    },
+    {
+      "id": "our_therapists",
+      "title": "Our Therapists",
+      "message": "Meet our licensed physiotherapists and rehabilitation specialists.",
+      "icon": "ic_therapists",
+      "actions": []
+    },
+    {
+      "id": "patient_registration",
+      "title": "Patient Registration",
+      "message": "Register as a new patient and begin your recovery journey with Alsefa.",
+      "icon": "ic_registration",
+      "actions": []
+    },
+    {
+      "id": "treatment_plans",
+      "title": "Treatment Plans",
+      "message": "Review your personalized treatment plan, sessions and recovery milestones.",
+      "icon": "ic_treatment",
+      "actions": []
+    },
+    {
+      "id": "exercise_library",
+      "title": "Exercise Library",
+      "message": "Guided therapeutic exercises for home and clinic-based recovery.",
+      "icon": "ic_exercise",
+      "actions": []
+    },
+    {
+      "id": "patient_progress",
+      "title": "Patient Progress",
+      "message": "Track mobility goals, completed sessions and measured progress over time.",
+      "icon": "ic_progress",
+      "actions": []
+    },
+    {
+      "id": "contact_us",
+      "title": "Contact Us",
+      "message": "Call or visit Alsefa Physiotherapy Center and our care team will be glad to help.",
+      "icon": "ic_contact",
+      "actions": []
+    },
+    {
+      "id": "about_alsefa",
+      "title": "About Alsefa",
+      "message": "Alsefa Physiotherapy Center helps patients restore movement, reduce pain and live well.",
+      "icon": "ic_about",
+      "actions": []
+    },
+    {
+      "id": "notifications",
+      "title": "Notifications",
+      "message": "You are all caught up. New appointment and care updates will appear here.",
+      "icon": "ic_notifications",
+      "actions": []
+    },
+    {
+      "id": "appointments",
+      "title": "Appointments",
+      "message": "Manage your upcoming and previous physiotherapy appointments.",
+      "icon": "ic_appointments",
+      "actions": [{ "label": "Book Appointment", "action": "book_appointment", "style": "primary" }]
+    },
+    {
+      "id": "patients",
+      "title": "Patients",
+      "message": "Patient records and care overview for the Alsefa care team.",
+      "icon": "ic_patients",
+      "actions": []
+    },
+    {
+      "id": "profile",
+      "title": "Profile",
+      "message": "Your account, preferences and application settings.",
+      "icon": "ic_profile",
+      "actions": [
+        { "label": "Check for app update", "action": "update_app", "style": "primary" },
+        { "label": "Refresh config", "action": "refresh", "style": "secondary" }
+      ]
+    }
+  ],
   "components": [
-    {
-      "type": "text",
-      "id": "title",
-      "value": "Hello, World!",
-      "style": "title"
-    },
-    {
-      "type": "text",
-      "id": "subtitle",
-      "value": "This screen came from remote config.",
-      "style": "body"
-    },
-    {
-      "type": "spacer",
-      "id": "space-title",
-      "heightDp": 24
-    },
-    {
-      "type": "card",
-      "id": "info",
-      "title": "Flexible by design",
-      "body": "Edit config/app_config.json to change the app without a new APK."
-    },
-    {
-      "type": "spacer",
-      "id": "space-card",
-      "heightDp": 20
-    },
     {
       "type": "button",
       "id": "update",
@@ -64,18 +198,6 @@
       "action": "refresh",
       "style": "primary",
       "feature": "refresh"
-    },
-    {
-      "type": "spacer",
-      "id": "space-footer",
-      "heightDp": 28
-    },
-    {
-      "type": "text",
-      "id": "footer",
-      "value": "Signed remote config · no reinstall needed",
-      "style": "caption",
-      "feature": "footer"
     }
   ]
 }

@@ -40,7 +40,7 @@ class ConfigRepository(context: Context) {
                     throw SecurityException("Config signature verification failed")
                 }
                 val config = decode(payload.json)
-                if (config.schemaVersion != SUPPORTED_SCHEMA_VERSION) {
+                if (config.schemaVersion !in SUPPORTED_SCHEMA_VERSIONS) {
                     throw IllegalArgumentException("Unsupported config schema")
                 }
                 if (config.minimumAppVersion > appVersion()) {
@@ -73,6 +73,6 @@ class ConfigRepository(context: Context) {
         .toInt()
 
     private companion object {
-        const val SUPPORTED_SCHEMA_VERSION = 1
+        val SUPPORTED_SCHEMA_VERSIONS = setOf(1, 2)
     }
 }

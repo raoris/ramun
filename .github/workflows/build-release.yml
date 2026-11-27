@@ -70,11 +70,21 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
+      - name: Build debug APK
+        run: gradle :app:assembleDebug --no-daemon --stacktrace
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ramun-apk-${{ env.RELEASE_VERSION_NAME }}
+          name: alsefa-apk-${{ env.RELEASE_VERSION_NAME }}
           path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: alsefa-debug-apk-${{ env.RELEASE_VERSION_NAME }}
+          path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
       - name: Publish GitHub Release
@@ -82,7 +92,7 @@ jobs:
         with:
           tag_name: v${{ env.RELEASE_VERSION_NAME }}
           target_commitish: ${{ github.sha }}
-          name: Ramun ${{ env.RELEASE_VERSION_NAME }}
+          name: Alsefa Physiotherapy Center ${{ env.RELEASE_VERSION_NAME }}
           body: |
             Signed release APK built from `${{ github.sha }}`.
           files: app/build/outputs/apk/release/app-release.apk
