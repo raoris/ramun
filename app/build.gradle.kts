@@ -8,6 +8,8 @@ val releaseStorePassword = System.getenv("KEYSTORE_PASSWORD")
 val releaseKeyAlias = System.getenv("KEY_ALIAS")
 val releaseKeyPassword = System.getenv("KEY_PASSWORD")
 val hasReleaseSigning = releaseKeystore != null && releaseStorePassword != null && releaseKeyAlias != null && releaseKeyPassword != null
+val releaseVersionCode = System.getenv("RELEASE_VERSION_CODE")?.toIntOrNull() ?: 1
+val releaseVersionName = System.getenv("RELEASE_VERSION_NAME") ?: "1.0"
 
 android {
     namespace = "com.example.helloworld"
@@ -17,8 +19,8 @@ android {
         applicationId = "com.example.helloworld"
         minSdk = 23
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = releaseVersionCode
+        versionName = releaseVersionName
     }
 
     signingConfigs {
