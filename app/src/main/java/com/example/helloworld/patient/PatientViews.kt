@@ -64,11 +64,11 @@ class PatientViews(private val context: Context, private val store: PatientStore
             }
         )
 
-        val name = inputField("Full name", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS)
-        val age = inputField("Age", InputType.TYPE_CLASS_NUMBER)
-        val bloodPressure = inputField("Blood pressure (e.g. 120/80)", InputType.TYPE_CLASS_TEXT)
-        val address = inputField("Address", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
-        val phone = inputField("Phone number", InputType.TYPE_CLASS_PHONE)
+        val name = inputField("Full name (e.g. Ahmed Khan)", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+        val age = inputField("Age (e.g. 32)", InputType.TYPE_CLASS_NUMBER)
+        val bloodPressure = inputField("Blood pressure (e.g. 120/80 mmHg)", InputType.TYPE_CLASS_TEXT)
+        val address = inputField("Address (e.g. House 12, Main Street)", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+        val phone = inputField("Phone number (e.g. 0300 1234567)", InputType.TYPE_CLASS_PHONE)
         val weight = inputField("Weight in kg (e.g. 68.5)", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
 
         listOf(name, age, bloodPressure, address, phone, weight).forEach { field ->

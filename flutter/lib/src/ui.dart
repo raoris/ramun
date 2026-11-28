@@ -670,7 +670,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
     super.dispose();
   }
 
-  InputDecoration _decoration(String label) {
+  InputDecoration _decoration(String label, {String? hint}) {
     final palette = widget.palette;
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
@@ -678,6 +678,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
     );
     return InputDecoration(
       labelText: label,
+      hintText: hint,
       filled: true,
       fillColor: palette.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -714,7 +715,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _name,
-              decoration: _decoration('Full name'),
+              decoration: _decoration('Full name', hint: 'e.g. Ahmed Khan'),
               validator: (value) => value == null || value.trim().isEmpty
                   ? 'Name is required'
                   : null,
@@ -723,7 +724,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             TextFormField(
               controller: _age,
               keyboardType: TextInputType.number,
-              decoration: _decoration('Age'),
+              decoration: _decoration('Age', hint: 'e.g. 32'),
               validator: (value) {
                 final age = int.tryParse(value?.trim() ?? '');
                 if (age == null || age < 1 || age > 120) return 'Enter a valid age';
@@ -733,7 +734,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _bloodPressure,
-              decoration: _decoration('Blood pressure (e.g. 120/80)'),
+              decoration: _decoration('Blood pressure', hint: 'e.g. 120/80 mmHg'),
               validator: (value) => value == null || value.trim().isEmpty
                   ? 'Blood pressure is required'
                   : null,
@@ -741,7 +742,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _address,
-              decoration: _decoration('Address'),
+              decoration: _decoration('Address', hint: 'e.g. House 12, Main Street'),
               maxLines: 2,
               validator: (value) => value == null || value.trim().isEmpty
                   ? 'Address is required'
@@ -751,7 +752,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             TextFormField(
               controller: _phone,
               keyboardType: TextInputType.phone,
-              decoration: _decoration('Phone number'),
+              decoration: _decoration('Phone number', hint: 'e.g. 0300 1234567'),
               validator: (value) => value == null || value.trim().length < 7
                   ? 'Enter a valid phone number'
                   : null,
@@ -760,7 +761,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             TextFormField(
               controller: _weight,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: _decoration('Weight in kg (e.g. 68.5)'),
+              decoration: _decoration('Weight in kg', hint: 'e.g. 68.5'),
               validator: (value) {
                 final weight = double.tryParse(value?.trim() ?? '');
                 if (weight == null || weight <= 0) return 'Enter a valid weight';
@@ -771,7 +772,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             TextFormField(
               controller: _recordedAtController,
               enabled: false,
-              decoration: _decoration('Date & time (automatic)'),
+              decoration: _decoration('Date & time (automatic)', hint: 'Auto-generated'),
             ),
             const SizedBox(height: 20),
             FilledButton(

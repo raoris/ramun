@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ -f "$HERE/flutter/pubspec.yaml" ]]; then
+  APP_DIR="$HERE/flutter"
+elif [[ -f "$HERE/ramun/flutter/pubspec.yaml" ]]; then
+  APP_DIR="$HERE/ramun/flutter"
+else
+  printf 'Flutter project not found.\n' >&2
+  exit 1
+fi
+
+if ! command -v flutter >/dev/null 2>&1; then
+  printf 'Flutter SDK not found in PATH. Install Flutter first.\n' >&2
+  exit 1
+fi
+
+missing=()
+for platform in android ios web linux macos windows; do
+  [[ -d "$APP_DIR/$platform" ]] || missing+=("$platform")
+done
+if ((${#missing[@]} > 0)); then
+  platforms="$(IFS=,; printf '%s' "${missing[*]}")"
+  (cd "$APP_DIR" && flutter create --project-name alsefa --platforms "$platforms" .)
+fi
+
+if [[ ! -f "$APP_DIR/.packages" ]]; then
+  (cd "$APP_DIR" && flutter pub get)
+fi
+
+DEVICE="${ASPDEVICE:-${1:-}}"
+if [[ -z "$DEVICE" ]]; then
+  devices=()
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && devices+=("$line")
+  done < <(flutter devices 2>/dev/null | awk '/•/ {print $1}' || true)
+
+  if ((${#devices[@]} == 0)); then
+    printf 'No device detected. Start a desktop session, browser or emulator first.\n' >&2
+    exit 1
+  fi
+
+  case "$(uname -s)" in
+    Linux*) preferred="linux" ;;
+    Darwin*) preferred="macos" ;;
+    MINGW*|MSYS*|CYGWIN*) preferred="windows" ;;
+    *) preferred="" ;;
+  esac
+
+  for candidate in "$preferred" chrome web android ios; do
+    [[ -z "$candidate" ]] && continue
+    for detected in "${devices[@]}"; do
+      if [[ "$detected" == "$candidate" ]]; then
+        DEVICE="$candidate"
+        break 2
+      fi
+    done
+  done
+
+  if [[ -z "$DEVICE" ]]; then
+    DEVICE="${devices[0]}"
+  fi
+fi
+
+printf 'Starting Alsefa on: %s\n' "$DEVICE"
+cd "$APP_DIR"
+exec flutter run -d "$DEVICE"
