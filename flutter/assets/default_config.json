@@ -65,6 +65,7 @@
     "spacingDp": 8,
     "cornerRadiusDp": 8,
     "items": [
+      { "id": "dashboard", "label": "Management Dashboard", "icon": "ic_dashboard", "action": "dashboard", "visible": true },
       { "id": "book_appointment", "label": "Book Appointment", "icon": "ic_calendar", "action": "book_appointment", "visible": true },
       { "id": "our_services", "label": "Our Services", "icon": "ic_services", "action": "our_services", "visible": true },
       { "id": "our_therapists", "label": "Our Therapists", "icon": "ic_therapists", "action": "our_therapists", "visible": true },
