@@ -6,6 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'config.dart';
+import 'data/document_service.dart';
+import 'data/repository.dart';
+import 'modules_ui.dart';
 import 'patient.dart';
 import 'remote_config.dart';
 import 'update.dart';
@@ -45,6 +48,20 @@ IconData iconFor(String name) {
       return Icons.medical_services_rounded;
     case 'ic_banner_physio':
       return Icons.accessibility_new_rounded;
+    case 'ic_schedule':
+      return Icons.schedule_rounded;
+    case 'ic_finance':
+      return Icons.account_balance_wallet_rounded;
+    case 'ic_files':
+      return Icons.folder_open_rounded;
+    case 'ic_backup':
+      return Icons.backup_rounded;
+    case 'ic_settings':
+      return Icons.settings_rounded;
+    case 'ic_accounts':
+      return Icons.receipt_long_rounded;
+    case 'ic_dashboard':
+      return Icons.dashboard_rounded;
     default:
       return Icons.medical_services_rounded;
   }
@@ -59,9 +76,10 @@ class AlsefaApp extends StatefulWidget {
 
 class _AlsefaAppState extends State<AlsefaApp> {
   RemoteConfigService? _service;
-  PatientStore? _patientStore;
+  AlsefaRepository? _repository;
   RemoteConfig? _config;
   String _screen = 'home';
+  Patient? _editingPatient;
   bool _loading = true;
 
   @override
@@ -77,10 +95,25 @@ class _AlsefaAppState extends State<AlsefaApp> {
   }
 
   Future<void> _initialize() async {
-    final preferences = await SharedPreferences.getInstance();
-    _service = RemoteConfigService(preferences);
-    _patientStore = PatientStore(preferences);
-    await _load(forceRefresh: true);
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      _service = RemoteConfigService(preferences);
+      final repository = await SqliteRepository.create();
+      _repository = repository;
+      final legacy = LegacyPatientStore(preferences);
+      final legacyRecords = legacy.records();
+      if (legacyRecords.isNotEmpty) {
+        await repository.migrateLegacyPatients(legacyRecords);
+        await legacy.clear();
+      }
+      await _load(forceRefresh: true);
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(content: Text('Local storage unavailable: $error')),
+      );
+    }
   }
 
   Future<void> _load({bool forceRefresh = false}) async {
@@ -136,13 +169,24 @@ class _AlsefaAppState extends State<AlsefaApp> {
   @override
   Widget build(BuildContext context) {
     final config = _config;
-    if (_loading || config == null) {
+    if (_loading) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           backgroundColor: const Color(0xFF078F91),
           body: const Center(
             child: CircularProgressIndicator(color: Colors.white),
+          ),
+        ),
+      );
+    }
+    if (config == null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: const Color(0xFFE8F3F2),
+          body: const Center(
+            child: Text('Unable to start ALSEFA. Please restart the app.'),
           ),
         ),
       );
@@ -217,24 +261,76 @@ class _AlsefaAppState extends State<AlsefaApp> {
     );
   }
 
+  void _startNewPatient() {
+    setState(() {
+      _editingPatient = null;
+      _screen = 'patient_registration';
+    });
+  }
+
+  void _editPatient(Patient patient) {
+    setState(() {
+      _editingPatient = patient;
+      _screen = 'patient_registration';
+    });
+  }
+
   Widget _buildScreen(RemoteConfig config) {
-    final palette = config.palette;
+    final repository = _repository;
+    if (repository == null) {
+      return Center(
+        child: Text(
+          'Local storage is not available.',
+          style: TextStyle(color: config.palette.muted),
+        ),
+      );
+    }
     if (_screen == 'home') {
       return HomeView(config: config, onAction: _handleAction);
     }
+    if (_screen == 'dashboard') {
+      return DashboardOverviewScreen(
+        config: config,
+        repository: repository,
+        onAction: _handleAction,
+      );
+    }
     if (_screen == 'patient_registration') {
       return PatientRegistrationScreen(
-        palette: palette,
-        store: _patientStore!,
+        config: config,
+        repository: repository,
+        patient: _editingPatient,
         onSaved: () => _handleAction('patients'),
       );
     }
     if (_screen == 'patients') {
-      return PatientsScreen(
-        palette: palette,
-        store: _patientStore!,
-        onRegister: () => _handleAction('patient_registration'),
+      return PatientsManagementScreen(
+        config: config,
+        repository: repository,
+        onRegister: _startNewPatient,
+        onEdit: _editPatient,
       );
+    }
+    if (_screen == 'appointments' || _screen == 'schedule') {
+      return ScheduleScreen(config: config, repository: repository);
+    }
+    if (_screen == 'treatment_plans' || _screen == 'treatment_management') {
+      return TreatmentScreen(config: config, repository: repository);
+    }
+    if (_screen == 'patient_progress' || _screen == 'patient_accounts') {
+      return PatientAccountsScreen(config: config, repository: repository);
+    }
+    if (_screen == 'financial_reports') {
+      return FinancialReportsScreen(config: config, repository: repository);
+    }
+    if (_screen == 'files_media') {
+      return FilesMediaScreen(config: config, repository: repository);
+    }
+    if (_screen == 'backup_restore') {
+      return BackupRestoreScreen(config: config, repository: repository);
+    }
+    if (_screen == 'settings') {
+      return SettingsScreen(config: config, repository: repository);
     }
     final screen = config.screenById(_screen) ??
         ScreenConfig(
@@ -618,13 +714,15 @@ class PlaceholderScreen extends StatelessWidget {
 class PatientRegistrationScreen extends StatefulWidget {
   const PatientRegistrationScreen({
     super.key,
-    required this.palette,
-    required this.store,
+    required this.config,
+    required this.repository,
+    this.patient,
     required this.onSaved,
   });
 
-  final Palette palette;
-  final PatientStore store;
+  final RemoteConfig config;
+  final AlsefaRepository repository;
+  final Patient? patient;
   final VoidCallback onSaved;
 
   @override
@@ -640,21 +738,57 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
   final _address = TextEditingController();
   final _phone = TextEditingController();
   final _weight = TextEditingController();
+  final _gender = TextEditingController();
+  final _diagnosis = TextEditingController();
+  final _regularFee = TextEditingController(text: '0');
+  final _firstFee = TextEditingController(text: '300');
+  final _initialPayment = TextEditingController(text: '0');
+  final _preferredTime = TextEditingController();
   final _recordedAtController = TextEditingController();
-  String _recordedAt = PatientStore.timestamp();
+  final _patientId = newId();
+  String _recordedAt = _localTimestamp();
   Timer? _timestampTimer;
 
   @override
   void initState() {
     super.initState();
     _recordedAtController.text = _recordedAt;
+    final patient = widget.patient;
+    if (patient != null) {
+      _name.text = patient.name;
+      _age.text = patient.age.toString();
+      _bloodPressure.text = patient.bp;
+      _address.text = patient.address;
+      _phone.text = patient.phone;
+      _weight.text = patient.weightKg.toString();
+      _gender.text = patient.gender;
+      _diagnosis.text = patient.diagnosis;
+      _regularFee.text = patient.regularFee.toString();
+      _firstFee.text = patient.firstFee.toString();
+      _initialPayment.text = patient.initialPayment.toString();
+      _preferredTime.text = patient.preferredTime;
+      _recordedAt = patient.createdAt;
+      _recordedAtController.text = patient.createdAt;
+    }
     _timestampTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       if (!mounted) return;
       setState(() {
-        _recordedAt = PatientStore.timestamp();
+        _recordedAt = _localTimestamp();
         _recordedAtController.text = _recordedAt;
       });
     });
+  }
+
+  String get _patientIdentity => widget.patient?.id ?? _patientId;
+
+  String get existingLabel =>
+      widget.patient == null ? 'Save patient' : 'Update patient';
+
+  String _localTimestamp([DateTime? value]) {
+    final now = value ?? DateTime.now();
+    String two(int number) => number.toString().padLeft(2, '0');
+    return '${now.year.toString().padLeft(4, '0')}-${two(now.month)}-${two(now.day)} '
+        '${two(now.hour)}:${two(now.minute)}';
   }
 
   @override
@@ -667,11 +801,17 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
     _address.dispose();
     _phone.dispose();
     _weight.dispose();
+    _gender.dispose();
+    _diagnosis.dispose();
+    _regularFee.dispose();
+    _firstFee.dispose();
+    _initialPayment.dispose();
+    _preferredTime.dispose();
     super.dispose();
   }
 
   InputDecoration _decoration(String label, {String? hint}) {
-    final palette = widget.palette;
+    final palette = widget.config.palette;
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
       borderSide: BorderSide(color: palette.border),
@@ -692,9 +832,31 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
     );
   }
 
+  Future<void> _uploadDocument(BuildContext context) async {
+    try {
+      final document = await DocumentService.pickForPatient(
+        _patientIdentity,
+        widget.repository,
+      );
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            document == null ? 'No file selected' : 'Document saved: ${document.name}',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Upload failed: $error')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final palette = widget.palette;
+    final palette = widget.config.palette;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Form(
@@ -703,7 +865,9 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'New Patient Registration',
+              widget.patient == null
+                  ? 'New Patient Registration'
+                  : 'Edit Patient',
               style: TextStyle(
                 color: palette.primary,
                 fontSize: 18,
@@ -773,9 +937,79 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             ),
             const SizedBox(height: 12),
             TextFormField(
+              controller: _gender,
+              decoration: _decoration('Gender', hint: 'e.g. Female'),
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Gender is required'
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _diagnosis,
+              decoration: _decoration('Diagnosis / condition', hint: 'e.g. Frozen shoulder'),
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Diagnosis is required'
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _regularFee,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: _decoration('Regular session fee', hint: 'e.g. 500'),
+              validator: (value) {
+                final amount = double.tryParse(value?.trim() ?? '');
+                if (amount == null || amount <= 0) return 'Enter a valid fee';
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _firstFee,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: _decoration('First day fee', hint: 'Default 300'),
+              validator: (value) {
+                final amount = double.tryParse(value?.trim() ?? '');
+                if (amount == null || amount <= 0) return 'Enter a valid fee';
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _initialPayment,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: _decoration('Initial payment', hint: 'e.g. 300'),
+              validator: (value) {
+                final amount = double.tryParse(value?.trim() ?? '');
+                if (amount == null || amount < 0) return 'Enter a valid amount';
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _preferredTime,
+              decoration: _decoration('Preferred time', hint: 'e.g. 10:30 AM'),
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Preferred time is required'
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
               controller: _recordedAtController,
               enabled: false,
               decoration: _decoration('Date & time (automatic)', hint: 'Auto-generated'),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: () => _uploadDocument(context),
+              icon: Icon(Icons.upload_file, color: palette.primary),
+              label: Text(
+                'Upload prescription / report',
+                style: TextStyle(color: palette.primary),
+              ),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: palette.border),
+                minimumSize: const Size.fromHeight(44),
+              ),
             ),
             const SizedBox(height: 20),
             FilledButton(
@@ -786,97 +1020,50 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
               ),
               onPressed: () async {
                 if (!_formKey.currentState!.validate()) return;
-                await widget.store.add(
-                  Patient(
-                    id: DateTime.now().microsecondsSinceEpoch.toString(),
-                    name: _name.text.trim(),
-                    age: int.parse(_age.text.trim()),
-                    bloodPressure: _bloodPressure.text.trim(),
-                    address: _address.text.trim(),
-                    phone: _phone.text.trim(),
-                    weightKg: double.parse(_weight.text.trim()),
-                    recordedAt: _recordedAt,
-                  ),
+                final existing = widget.patient;
+                final timestamp = nowIso();
+                final patient = Patient(
+                  id: _patientIdentity,
+                  name: _name.text.trim(),
+                  age: int.parse(_age.text.trim()),
+                  gender: _gender.text.trim(),
+                  bp: _bloodPressure.text.trim(),
+                  address: _address.text.trim(),
+                  phone: _phone.text.trim(),
+                  weightKg: double.parse(_weight.text.trim()),
+                  diagnosis: _diagnosis.text.trim(),
+                  regularFee: double.parse(_regularFee.text.trim()),
+                  firstFee: double.parse(_firstFee.text.trim()),
+                  initialPayment: double.parse(_initialPayment.text.trim()),
+                  preferredTime: _preferredTime.text.trim(),
+                  createdAt: existing?.createdAt ?? timestamp,
+                  updatedAt: timestamp,
+                  syncStatus: 'pending',
                 );
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Patient registered')),
-                );
-                widget.onSaved();
+                try {
+                  await widget.repository.savePatient(patient);
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        existing == null
+                            ? 'Patient registered'
+                            : 'Patient updated',
+                      ),
+                    ),
+                  );
+                  widget.onSaved();
+                } catch (error) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Save failed: $error')),
+                  );
+                }
               },
-              child: const Text('Save patient'),
+              child: Text(existingLabel),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class PatientsScreen extends StatelessWidget {
-  const PatientsScreen({
-    super.key,
-    required this.palette,
-    required this.store,
-    required this.onRegister,
-  });
-
-  final Palette palette;
-  final PatientStore store;
-  final VoidCallback onRegister;
-
-  @override
-  Widget build(BuildContext context) {
-    final patients = store.all();
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Registered Patients',
-            style: TextStyle(
-              color: palette.primary,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (patients.isEmpty)
-            Text(
-              'No patients registered yet. Add the first patient to see them here.',
-              style: TextStyle(color: palette.muted, fontSize: 13),
-            )
-          else
-            for (final patient in patients)
-              Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: palette.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: palette.border),
-                ),
-                child: Text(
-                  '${patient.name}  •  ${patient.age} yrs\n'
-                  'BP: ${patient.bloodPressure}  •  Weight: ${patient.weightKg} kg\n'
-                  'Phone: ${patient.phone}\n'
-                  'Address: ${patient.address}\n'
-                  'Recorded: ${patient.recordedAt}',
-                  style: TextStyle(color: palette.onSurface, fontSize: 12),
-                ),
-              ),
-          const SizedBox(height: 8),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: palette.primary,
-              foregroundColor: palette.onPrimary,
-              minimumSize: const Size.fromHeight(48),
-            ),
-            onPressed: onRegister,
-            child: const Text('Register new patient'),
-          ),
-        ],
       ),
     );
   }

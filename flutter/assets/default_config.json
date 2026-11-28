@@ -178,8 +178,72 @@
       "icon": "ic_profile",
       "actions": [
         { "label": "Check for app update", "action": "update_app", "style": "primary" },
-        { "label": "Refresh config", "action": "refresh", "style": "secondary" }
+        { "label": "Refresh config", "action": "refresh", "style": "secondary" },
+        { "label": "Management Dashboard", "action": "dashboard", "style": "secondary" },
+        { "label": "Schedule & Rush Hour", "action": "schedule", "style": "secondary" },
+        { "label": "Treatment Management", "action": "treatment_management", "style": "secondary" },
+        { "label": "Patient Accounts", "action": "patient_accounts", "style": "secondary" },
+        { "label": "Financial Reports", "action": "financial_reports", "style": "secondary" },
+        { "label": "Files & Media", "action": "files_media", "style": "secondary" },
+        { "label": "Backup & Restore", "action": "backup_restore", "style": "secondary" },
+        { "label": "Settings", "action": "settings", "style": "secondary" }
       ]
+    },
+    {
+      "id": "dashboard",
+      "title": "Management Dashboard",
+      "message": "Clinic activity, patient counts and financial overview.",
+      "icon": "ic_dashboard",
+      "actions": []
+    },
+    {
+      "id": "schedule",
+      "title": "Schedule & Rush-Hour Tracker",
+      "message": "Patient arrivals, session times and rush-hour activity.",
+      "icon": "ic_schedule",
+      "actions": []
+    },
+    {
+      "id": "treatment_management",
+      "title": "Treatment Management",
+      "message": "Assessments, therapy plans and daily session completion.",
+      "icon": "ic_treatment",
+      "actions": []
+    },
+    {
+      "id": "patient_accounts",
+      "title": "Patient Accounts",
+      "message": "Payments, dues, advances and transaction history.",
+      "icon": "ic_accounts",
+      "actions": []
+    },
+    {
+      "id": "financial_reports",
+      "title": "Financial Reports",
+      "message": "Income, expenses and net balance reports.",
+      "icon": "ic_finance",
+      "actions": []
+    },
+    {
+      "id": "files_media",
+      "title": "Files & Media",
+      "message": "Patient prescriptions, reports and other documents.",
+      "icon": "ic_files",
+      "actions": []
+    },
+    {
+      "id": "backup_restore",
+      "title": "Backup & Restore",
+      "message": "Local backup and restore for all clinic data.",
+      "icon": "ic_backup",
+      "actions": []
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "message": "Offline status, sync readiness and local data controls.",
+      "icon": "ic_settings",
+      "actions": []
     }
   ],
   "components": [
