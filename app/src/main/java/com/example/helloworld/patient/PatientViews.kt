@@ -19,6 +19,7 @@ import java.util.Locale
 
 class PatientViews(private val context: Context, private val store: PatientStore) {
     private var inputTextColor: Int = Color.parseColor("#263238")
+    private var inputHintColor: Int = Color.parseColor("#78909C")
     private var inputSurface: Int = Color.WHITE
     private var inputBorder: Int = Color.parseColor("#DCE5E5")
 
@@ -29,6 +30,7 @@ class PatientViews(private val context: Context, private val store: PatientStore
         val textColor = color(palette.text, Color.parseColor("#263238"))
         val muted = color(palette.muted, Color.parseColor("#78909C"))
         inputTextColor = textColor
+        inputHintColor = muted
         inputSurface = surface
         inputBorder = border
 
@@ -71,13 +73,21 @@ class PatientViews(private val context: Context, private val store: PatientStore
         val phone = inputField("Phone number (e.g. 0300 1234567)", InputType.TYPE_CLASS_PHONE)
         val weight = inputField("Weight in kg (e.g. 68.5)", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
 
-        listOf(name, age, bloodPressure, address, phone, weight).forEach { field ->
+        listOf(
+            "Full name" to name,
+            "Age" to age,
+            "Blood pressure" to bloodPressure,
+            "Address" to address,
+            "Phone number" to phone,
+            "Weight in kg" to weight
+        ).forEach { (label, field) ->
+            content.addView(labelView(label))
             content.addView(
                 field.apply {
                     layoutParams = LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
-                    ).apply { topMargin = dp(12) }
+                    ).apply { topMargin = dp(4) }
                 }
             )
         }
@@ -255,10 +265,21 @@ class PatientViews(private val context: Context, private val store: PatientStore
         return content
     }
 
+    private fun labelView(label: String): TextView = TextView(context).apply {
+        text = label
+        textSize = 11f
+        setTextColor(inputTextColor)
+        layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { topMargin = dp(12) }
+    }
+
     private fun inputField(hint: String, inputType: Int): EditText = EditText(context).apply {
         this.hint = hint
         this.inputType = inputType
         setTextColor(inputTextColor)
+        setHintTextColor(inputHintColor)
         background = rounded(inputSurface, inputBorder, 8)
         setPadding(dp(12), dp(12), dp(12), dp(12))
         setSingleLine(true)

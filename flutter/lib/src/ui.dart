@@ -678,7 +678,9 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
     );
     return InputDecoration(
       labelText: label,
-      hintText: hint,
+      hintText: hint ?? label,
+      hintStyle: TextStyle(color: palette.muted, fontSize: 13),
+      floatingLabelBehavior: FloatingLabelBehavior.always,
       filled: true,
       fillColor: palette.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
