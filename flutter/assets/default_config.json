@@ -66,13 +66,17 @@
     "cornerRadiusDp": 8,
     "items": [
       { "id": "dashboard", "label": "Management Dashboard", "icon": "ic_dashboard", "action": "dashboard", "visible": true },
-      { "id": "book_appointment", "label": "Book Appointment", "icon": "ic_calendar", "action": "book_appointment", "visible": true },
+      { "id": "schedule", "label": "Schedule & Rush Hour", "icon": "ic_schedule", "action": "schedule", "visible": true },
       { "id": "our_services", "label": "Our Services", "icon": "ic_services", "action": "our_services", "visible": true },
       { "id": "our_therapists", "label": "Our Therapists", "icon": "ic_therapists", "action": "our_therapists", "visible": true },
       { "id": "patient_registration", "label": "Patient Registration", "icon": "ic_registration", "action": "patient_registration", "visible": true },
-      { "id": "treatment_plans", "label": "Treatment Plans", "icon": "ic_treatment", "action": "treatment_plans", "visible": true },
+      { "id": "treatment_management", "label": "Treatment Management", "icon": "ic_treatment", "action": "treatment_management", "visible": true },
       { "id": "exercise_library", "label": "Exercise Library", "icon": "ic_exercise", "action": "exercise_library", "visible": true },
-      { "id": "patient_progress", "label": "Patient Progress", "icon": "ic_progress", "action": "patient_progress", "visible": true },
+      { "id": "patient_accounts", "label": "Patient Accounts", "icon": "ic_accounts", "action": "patient_accounts", "visible": true },
+      { "id": "financial_reports", "label": "Financial Reports", "icon": "ic_finance", "action": "financial_reports", "visible": true },
+      { "id": "files_media", "label": "Files & Media", "icon": "ic_files", "action": "files_media", "visible": true },
+      { "id": "backup_restore", "label": "Backup & Restore", "icon": "ic_backup", "action": "backup_restore", "visible": true },
+      { "id": "settings", "label": "Settings", "icon": "ic_settings", "action": "settings", "visible": true },
       { "id": "contact_us", "label": "Contact Us", "icon": "ic_contact", "action": "contact_us", "visible": true },
       { "id": "about_alsefa", "label": "About Alsefa", "icon": "ic_about", "action": "about_alsefa", "visible": true }
     ]
@@ -179,15 +183,7 @@
       "icon": "ic_profile",
       "actions": [
         { "label": "Check for app update", "action": "update_app", "style": "primary" },
-        { "label": "Refresh config", "action": "refresh", "style": "secondary" },
-        { "label": "Management Dashboard", "action": "dashboard", "style": "secondary" },
-        { "label": "Schedule & Rush Hour", "action": "schedule", "style": "secondary" },
-        { "label": "Treatment Management", "action": "treatment_management", "style": "secondary" },
-        { "label": "Patient Accounts", "action": "patient_accounts", "style": "secondary" },
-        { "label": "Financial Reports", "action": "financial_reports", "style": "secondary" },
-        { "label": "Files & Media", "action": "files_media", "style": "secondary" },
-        { "label": "Backup & Restore", "action": "backup_restore", "style": "secondary" },
-        { "label": "Settings", "action": "settings", "style": "secondary" }
+        { "label": "Refresh config", "action": "refresh", "style": "secondary" }
       ]
     },
     {
