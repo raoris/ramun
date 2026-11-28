@@ -1,0 +1,9 @@
+{
+  "name": "Alsefa Physiotherapy Center",
+  "short_name": "Alsefa",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#E8F3F2",
+  "theme_color": "#078F91",
+  "icons": []
+}
