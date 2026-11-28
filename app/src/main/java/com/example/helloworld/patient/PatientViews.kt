@@ -73,21 +73,13 @@ class PatientViews(private val context: Context, private val store: PatientStore
         val phone = inputField("Phone number (e.g. 0300 1234567)", InputType.TYPE_CLASS_PHONE)
         val weight = inputField("Weight in kg (e.g. 68.5)", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
 
-        listOf(
-            "Full name" to name,
-            "Age" to age,
-            "Blood pressure" to bloodPressure,
-            "Address" to address,
-            "Phone number" to phone,
-            "Weight in kg" to weight
-        ).forEach { (label, field) ->
-            content.addView(labelView(label))
+        listOf(name, age, bloodPressure, address, phone, weight).forEach { field ->
             content.addView(
                 field.apply {
                     layoutParams = LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
-                    ).apply { topMargin = dp(4) }
+                    ).apply { topMargin = dp(12) }
                 }
             )
         }
@@ -263,16 +255,6 @@ class PatientViews(private val context: Context, private val store: PatientStore
             }
         )
         return content
-    }
-
-    private fun labelView(label: String): TextView = TextView(context).apply {
-        text = label
-        textSize = 11f
-        setTextColor(inputTextColor)
-        layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply { topMargin = dp(12) }
     }
 
     private fun inputField(hint: String, inputType: Int): EditText = EditText(context).apply {

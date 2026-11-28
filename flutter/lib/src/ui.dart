@@ -676,11 +676,12 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
       borderRadius: BorderRadius.circular(8),
       borderSide: BorderSide(color: palette.border),
     );
+    final placeholder = hint != null && hint.startsWith('e.g.')
+        ? '$label ($hint)'
+        : hint ?? label;
     return InputDecoration(
-      labelText: label,
-      hintText: hint ?? label,
+      hintText: placeholder,
       hintStyle: TextStyle(color: palette.muted, fontSize: 13),
-      floatingLabelBehavior: FloatingLabelBehavior.always,
       filled: true,
       fillColor: palette.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
